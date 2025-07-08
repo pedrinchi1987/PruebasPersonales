@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Terraform
+
+# Controls when the workflow will run
+on:
+  workflow_dispatch:
+  
+env:
+  TF_WORKSPACE: "${{ secrets.TF_WORKSPACE }}"
+  TF_CLOUD_ORGANIZATION: "${{ secrets.TF_CLOUD_ORGANIZATION }}"
+  TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  AWS_REGION: "${{ secrets.AWS_REGION }}"
+  CONFIG_DIRECTORY: "."
+  
+jobs:
+  terraform_destroy:
+    if: github.repository != 'PruebasPersonales'
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    permissions: # granular permissions
+      # so GitHub can check out this repo using the default github.token
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.3.0
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+        env:
+          TF_LOG: ERROR
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+                
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+        continue-on-error: true
