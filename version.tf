@@ -6,7 +6,13 @@ terraform {
     }
   }
 
-  cloud {}
+  backend "remote" {
+    organization = "PruebasPersonales"
+
+    workspaces {
+      name = "PruebasPersonales"
+    }
+  }
 }
 
 provider "aws" {
