@@ -6,6 +6,10 @@ terraform {
     }
   }
 
+  backend "remote" {
+
+  }
+  /*
   cloud {
     organization = "PruebasPersonales"
 
@@ -13,6 +17,7 @@ terraform {
       name = "PruebasPersonales"
     }
   }
+  */
 }
 
 provider "aws" {
