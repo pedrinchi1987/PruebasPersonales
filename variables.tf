@@ -9,7 +9,6 @@ variable "region" {
   description = "Valor de Region"
 }
 
-/*
 variable "access_key" {
   type        = string
   description = "Valor de clave de Acceso"
@@ -19,4 +18,5 @@ variable "secret_key" {
   type        = string
   description = "Valor de la llave secreta"
 }
-*/
+
+/**/
