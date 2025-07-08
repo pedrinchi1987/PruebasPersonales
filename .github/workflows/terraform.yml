@@ -30,7 +30,13 @@ jobs:
       - name: Configure Terraform credentials file
         run: |
           mkdir -p ~/.terraform.d
-            echo "{\"credentials\": {\"app.terraform.io\": {\"token\": \"${TF_API_TOKEN}\"}}}" > ~/.terraform.d/credentials.tfrc.json
+          echo '{
+            "credentials": {
+              "app.terraform.io": {
+                "token": "'${TF_API_TOKEN}'"
+              }
+            }
+          }' > ~/.terraform.d/credentials.tfrc.json
         env:
           TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
