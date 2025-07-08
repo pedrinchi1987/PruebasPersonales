@@ -16,34 +16,29 @@ env:
   CONFIG_DIRECTORY: "."
   
 jobs:
-  terraform_destroy:
-    if: github.repository != 'PruebasPersonales'
-    name: "Terraform"
+  terraform:
+    name: Terraform
     runs-on: ubuntu-latest
-    permissions: # granular permissions
-      # so GitHub can check out this repo using the default github.token
-      contents: read
-    defaults:
-      run:
-        working-directory: ${{ env.CONFIG_DIRECTORY }}
-    
     steps:
-    - name: "Checkout"
-      uses: actions/checkout@v3.5.2
-      
-    # Configure HCP Terraform API token, since we are using remote backend option of HCP Terraform in AWS code
-    - name: Setup Terraform CLI
-      uses: hashicorp/setup-terraform@v2.0.2
-      with:
-        cli_config_credentials_token: ${{ env.TF_API_TOKEN }}
-    
-    # Invoke the Terraform commands
-    - name: Terraform init and validate
-      run: |
-        echo `pwd`
-        echo "** Running Terraform Init**"
-        terraform init
-        
-        echo "** Running Terraform Validate**"
-        terraform validate
-      working-directory: ${{ env.CONFIG_DIRECTORY }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.3
+
+      - name: Configure Terraform Cloud Backend
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: |
+          terraform init \
+            -backend-config="hostname=app.terraform.io" \
+            -backend-config="organization=${{ secrets.TF_CLOUD_ORGANIZATION }}" \
+            -backend-config="workspaces.name=${{ secrets.TF_WORKSPACE }}"
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
