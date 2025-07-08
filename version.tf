@@ -6,13 +6,7 @@ terraform {
     }
   }
 
-  cloud {
-    organization = "PruebasPersonales"
-
-    workspaces {
-      name = "PruebasPersonales"
-    }
-  }
+  cloud {}
 }
 
 provider "aws" {
