@@ -6,10 +6,17 @@ name: Terraform
 on:
   workflow_dispatch:
   
+env:
+  CONFIG_DIRECTORY: "."
+
 jobs:
   terraform:
+    if: github.repository != 'PruebasPersonales'
     name: 'Terraform Apply'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
 
     steps:
       - name: Checkout code
