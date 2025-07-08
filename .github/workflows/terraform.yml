@@ -29,11 +29,21 @@ jobs:
     
     steps:
     - name: "Checkout"
-      uses: actions/checkout@master
+      uses: actions/checkout@v3.5.2
       
-    - name: "Terraform Init"
-      uses: hashicorp/terraform-github-actions@master
+    # Configure HCP Terraform API token, since we are using remote backend option of HCP Terraform in AWS code
+    - name: Setup Terraform CLI
+      uses: hashicorp/setup-terraform@v2.0.2
       with:
-       tf_actions_version: 0.12.13
-       tf_actions_subcommand: "init"
-       
+        cli_config_credentials_token: ${{ env.TF_API_TOKEN }}
+    
+    # Invoke the Terraform commands
+    - name: Terraform init and validate
+      run: |
+        echo `pwd`
+        echo "** Running Terraform Init**"
+        terraform init
+        
+        echo "** Running Terraform Validate**"
+        terraform validate
+      working-directory: ${{ env.CONFIG_DIRECTORY }}
